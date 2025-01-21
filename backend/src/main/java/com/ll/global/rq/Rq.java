@@ -34,6 +34,7 @@ public class Rq {
                 member.getId(),
                 member.getUsername(),
                 "",
+                member.getNickname(),
                 member.getAuthorities()
         );
 
@@ -55,7 +56,7 @@ public class Rq {
                 .map(Authentication::getPrincipal)
                 .filter(principal -> principal instanceof SecurityUser)
                 .map(principal -> (SecurityUser) principal)
-                .map(securityUser -> new Member(securityUser.getId(), securityUser.getUsername()))
+                .map(securityUser -> new Member(securityUser.getId(), securityUser.getUsername(), securityUser.getNickname()))
                 .orElse(null);
     }
 
@@ -88,14 +89,6 @@ public class Rq {
 
     public String getHeader(String name) {
         return req.getHeader(name);
-    }
-
-    public Optional<Member> findByActor() {
-        Member actor = getActor();
-
-        if(actor == null) return Optional.empty();
-
-        return memberService.findById(actor.getId());
     }
 
     public void deleteCookie(String name) {

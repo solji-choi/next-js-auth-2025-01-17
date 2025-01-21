@@ -11,8 +11,6 @@ export default function ClientPage({
     <>
       <div>
         <div>id : {me.id}</div>
-        <div>가입 : {me.createDate}</div>
-        <div>수정 : {me.modifyDate}</div>
         <div>닉네임 : {me.nickname}</div>
       </div>
     </>

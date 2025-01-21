@@ -102,7 +102,8 @@ function parseCookie(cookieStr: string) {
 function isProtectedRoute(pathname: string): boolean {
   return (
     pathname.startsWith("/post/write") ||
-    pathname.match(/^\/post\/\d+\/edit$/) !== null
+    pathname.match(/^\/post\/\d+\/edit$/) !== null ||
+    pathname.startsWith("/member/me")
   );
 }
  

@@ -2,21 +2,40 @@ import client from '@/lib/backend/client'
 import { cookies } from 'next/headers'
 import ClientPage from './ClientPage'
 
-export default async function Page() {
-  const response = await client.GET('/api/v1/members/me', {
-    headers: {
-      cookie: (await cookies()).toString(),
-    },
-  })
+function parseAccessToken(accessToken: string | undefined) {
+  let isAccessTokenExpired = true
+  let accessTokenPayload = null
 
-  const setCookie = response.response.headers.get('Set-Cookie')
-  console.log(`setCookie : ${setCookie}`)
-
-  if (response.error) {
-    return <>{response.error.msg}</>
+  if (accessToken) {
+    try {
+      const tokenParts = accessToken.split('.')
+      accessTokenPayload = JSON.parse(
+        Buffer.from(tokenParts[1], 'base64').toString(),
+      )
+      const expTimestamp = accessTokenPayload.exp * 1000
+      isAccessTokenExpired = Date.now() > expTimestamp
+    } catch (e) {
+      console.error('토큰 파싱 중 오류 발생:', e)
+    }
   }
 
-  const me = response.data
+  const isLogin =
+    typeof accessTokenPayload === 'object' && accessTokenPayload !== null
+
+  return { isLogin, isAccessTokenExpired, accessTokenPayload }
+}
+
+export default async function Page() {
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get('accessToken')?.value
+  const { accessTokenPayload } = parseAccessToken(accessToken)
+
+  const me = {
+    id: accessTokenPayload.id,
+    createDate: '',
+    modifyDate: '',
+    nickname: accessTokenPayload.nickname,
+  }
 
   return <ClientPage me={me} />
 }

@@ -298,8 +298,6 @@ public class ApiV1MemberControllerTest {
                 .andExpect(handler().methodName("me"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(actor.getId()))
-                .andExpect(jsonPath("$.createDate").value(Matchers.startsWith(actor.getCreateDate().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.modifyDate").value(Matchers.startsWith(actor.getModifyDate().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.nickname").value(actor.getNickname()));
     }
 
@@ -324,8 +322,6 @@ public class ApiV1MemberControllerTest {
                 .andExpect(handler().methodName("me"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(actor.getId()))
-                .andExpect(jsonPath("$.createDate").value(actor.getCreateDate().toString()))
-                .andExpect(jsonPath("$.modifyDate").value(actor.getModifyDate().toString()))
                 .andExpect(jsonPath("$.nickname").value(actor.getNickname()));
     }
 
