@@ -1,6 +1,7 @@
 package com.ll.domain.member.member.controller;
 
 import com.ll.domain.member.member.dto.MemberDto;
+import com.ll.domain.member.member.dto.MemberWithUsernameDto;
 import com.ll.domain.member.member.entity.Member;
 import com.ll.domain.member.member.service.MemberService;
 import com.ll.global.exceptions.ServiceException;
@@ -128,7 +129,7 @@ public class ApiV1MemberController {
     @GetMapping
     @Transactional(readOnly = true)
     @Operation(summary = "회원 다건 조회")
-    public PageDto<MemberDto> items(
+    public PageDto<MemberWithUsernameDto> items(
             @RequestParam(defaultValue = "nickname") MemberSearchKeywordTypeV1 searchKeywordType,
             @RequestParam(defaultValue = "") String searchKeyword,
             @RequestParam(defaultValue = "1") int page,
@@ -136,7 +137,7 @@ public class ApiV1MemberController {
     ) {
         return new PageDto<>(
                 memberService.findByPaged(searchKeywordType, searchKeyword, page, pageSize)
-                        .map(MemberDto::new)
+                        .map(MemberWithUsernameDto::new)
         );
     }
 }

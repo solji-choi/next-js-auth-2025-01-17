@@ -407,6 +407,7 @@ public class ApiV1MemberControllerTest {
                     .andExpect(jsonPath("$.items[%d].id".formatted(i)).value(member.getId()))
                     .andExpect(jsonPath("$.items[%d].createDate".formatted(i)).value(Matchers.startsWith(member.getCreateDate().toString().substring(0, 25))))
                     .andExpect(jsonPath("$.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(member.getModifyDate().toString().substring(0, 25))))
+                    .andExpect(jsonPath("$.items[%d].username".formatted(i)).value(member.getUsername()))
                     .andExpect(jsonPath("$.items[%d].nickname".formatted(i)).value(member.getName()));
         }
     }
@@ -456,6 +457,7 @@ public class ApiV1MemberControllerTest {
                     .andExpect(jsonPath("$.items[%d].id".formatted(i)).value(member.getId()))
                     .andExpect(jsonPath("$.items[%d].createDate".formatted(i)).value(Matchers.startsWith(member.getCreateDate().toString().substring(0, 25))))
                     .andExpect(jsonPath("$.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(member.getModifyDate().toString().substring(0, 25))))
+                    .andExpect(jsonPath("$.items[%d].username".formatted(i)).value(member.getUsername()))
                     .andExpect(jsonPath("$.items[%d].nickname".formatted(i)).value(member.getName()));
         }
     }
