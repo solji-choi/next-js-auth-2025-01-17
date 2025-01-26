@@ -4,50 +4,30 @@ import { cookies } from "next/headers";
 import client from "./lib/backend/client";
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import { parseAccessToken } from "@/lib/auth/tokens";
 
 export async function middleware(req: NextRequest) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
 
-  const { isLogin, isAccessTokenExpired, accessTokenPayload } =
+  const { isLogin, isAdmin, isAccessTokenExpired } =
     parseAccessToken(accessToken);
 
   if (isLogin && isAccessTokenExpired) {
     await refreshTokens(cookieStore);
   }
 
-  if (isProtectedRoute(req.nextUrl.pathname) && !isLogin) {
-    return createUnauthorizedResponse();
-  }
+  if (requiresLogin(req.nextUrl.pathname) && !isLogin)
+    return createUnauthorizedResponse("로그인 후 이용해주세요.");
+
+  if(requiresAdmin(req.nextUrl.pathname) && !isAdmin)
+    return createForbiddenResponse("관리자로 로그인 후 다시 이용해주세요.");
 
   return NextResponse.next({
     headers: {
       cookie: cookieStore.toString(),
     },
   });
-}
-
-function parseAccessToken(accessToken: string | undefined) {
-  let isAccessTokenExpired = true;
-  let accessTokenPayload = null;
-
-  if (accessToken) {
-    try {
-      const tokenParts = accessToken.split(".");
-      accessTokenPayload = JSON.parse(
-        Buffer.from(tokenParts[1], "base64").toString()
-      );
-      const expTimestamp = accessTokenPayload.exp * 1000;
-      isAccessTokenExpired = Date.now() > expTimestamp;
-    } catch (e) {
-      console.error("토큰 파싱 중 오류 발생:", e);
-    }
-  }
-
-  const isLogin =
-    typeof accessTokenPayload === "object" && accessTokenPayload !== null;
-
-  return { isLogin, isAccessTokenExpired, accessTokenPayload };
 }
 
 async function refreshTokens(cookieStore: ReadonlyRequestCookies) {
@@ -99,17 +79,30 @@ function parseCookie(cookieStr: string) {
   return { name, value, options };
 }
 
-function isProtectedRoute(pathname: string): boolean {
+function requiresLogin(pathname: string): boolean {
   return (
     pathname.startsWith("/post/write") ||
     pathname.match(/^\/post\/\d+\/edit$/) !== null ||
     pathname.startsWith("/member/me")
   );
 }
+
+function requiresAdmin(pathname: string): boolean {
+  return pathname.startsWith("/adm");
+}
  
-function createUnauthorizedResponse(): NextResponse {
-  return new NextResponse("로그인이 필요합니다.", {
+function createUnauthorizedResponse(msg: string): NextResponse {
+  return new NextResponse(msg, {
     status: 401,
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+    },
+  });
+}
+
+function createForbiddenResponse(msg: string): NextResponse {
+  return new NextResponse(msg, {
+    status: 403,
     headers: {
       "Content-Type": "text/html; charset=utf-8",
     },
