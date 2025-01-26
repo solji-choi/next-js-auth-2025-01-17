@@ -5,6 +5,7 @@ import com.ll.standard.util.Ut;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -23,7 +24,12 @@ public class AuthTokenService {
         return Ut.jwt.toString(
                 jwtSecretKey,
                 accessTokenExpirationSeconds,
-                Map.of("id", id, "username", username, "nickname", nickname)
+                Map.of(
+                        "id", id,
+                        "username", username,
+                        "nickname", nickname,
+                        "authorities", member.getAuthoritiesAsStringList()
+                )
         );
     }
 
@@ -35,7 +41,13 @@ public class AuthTokenService {
         long id = (long) (Integer) parsedPayload.get("id");
         String username = (String) parsedPayload.get("username");
         String nickname = (String) parsedPayload.get("nickname");
+        List<String> authorities = (List<String>) parsedPayload.get("authorities");
 
-        return Map.of("id", id, "username", username, "nickname", nickname);
+        return Map.of(
+                "id", id,
+                "username", username,
+                "nickname", nickname,
+                "authorities", authorities
+        );
     }
 }
