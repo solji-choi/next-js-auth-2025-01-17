@@ -4,6 +4,9 @@ import com.ll.domain.member.member.entity.Member;
 import com.ll.domain.member.member.repository.MemberRepository;
 import com.ll.global.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -70,5 +73,11 @@ public class MemberService {
         Member member = new Member(id, username, nickname);
 
         return member;
+    }
+
+    public Page<Member> findByPaged(int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+
+        return memberRepository.findAll(pageRequest);
     }
 }

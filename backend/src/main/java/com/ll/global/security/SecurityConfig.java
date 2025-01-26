@@ -31,7 +31,7 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers("/api/*/members/login", "/api/*/members/logout","/api/*/members/join")
                                 .permitAll()
-                                .requestMatchers("/api/*/posts/statistics")
+                                .requestMatchers(HttpMethod.GET, "/api/*/posts/statistics", "/api/*/members")
                                 .hasRole("ADMIN")
                                 .requestMatchers("/api/*/**")
                                 .authenticated()

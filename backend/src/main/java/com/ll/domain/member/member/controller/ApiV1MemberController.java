@@ -7,6 +7,7 @@ import com.ll.global.exceptions.ServiceException;
 import com.ll.global.rq.Rq;
 import com.ll.global.rsData.RsData;
 import com.ll.standard.base.Empty;
+import com.ll.standard.page.dto.PageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -120,6 +121,19 @@ public class ApiV1MemberController {
         return new RsData(
                 "200-1",
                 "로그아웃 되었습니다"
+        );
+    }
+
+    @GetMapping
+    @Transactional(readOnly = true)
+    @Operation(summary = "회원 다건 조회")
+    public PageDto<MemberDto> items(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        return new PageDto<>(
+                memberService.findByPaged(page, pageSize)
+                        .map(MemberDto::new)
         );
     }
 }
