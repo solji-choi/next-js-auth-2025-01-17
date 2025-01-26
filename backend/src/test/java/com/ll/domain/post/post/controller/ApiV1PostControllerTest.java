@@ -4,7 +4,7 @@ import com.ll.domain.member.member.entity.Member;
 import com.ll.domain.member.member.service.MemberService;
 import com.ll.domain.post.post.entity.Post;
 import com.ll.domain.post.post.service.PostService;
-import com.ll.standard.search.SearchKeywordTypeV1;
+import com.ll.standard.search.PostSearchKeywordTypeV1;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -542,7 +542,7 @@ public class ApiV1PostControllerTest {
                 .andDo(print());
 
         Page<Post> postPage = postService
-                .findByListedPaged(true, SearchKeywordTypeV1.title, "축구", 1, 10);
+                .findByListedPaged(true, PostSearchKeywordTypeV1.title, "축구", 1, 10);
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PostController.class))
@@ -583,7 +583,7 @@ public class ApiV1PostControllerTest {
                 .andDo(print());
 
         Page<Post> postPage = postService
-                .findByListedPaged(true, SearchKeywordTypeV1.content, "18명", 1, 10);
+                .findByListedPaged(true, PostSearchKeywordTypeV1.content, "18명", 1, 10);
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PostController.class))
@@ -673,7 +673,7 @@ public class ApiV1PostControllerTest {
                 .andDo(print());
 
         Page<Post> postPage = postService
-                .findByAuthorPaged(actor, SearchKeywordTypeV1.title, "발야구", 1, 10);
+                .findByAuthorPaged(actor, PostSearchKeywordTypeV1.title, "발야구", 1, 10);
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PostController.class))
@@ -718,7 +718,7 @@ public class ApiV1PostControllerTest {
                 .andDo(print());
 
         Page<Post> postPage = postService
-                .findByAuthorPaged(actor, SearchKeywordTypeV1.content, "18명", 1, 10);
+                .findByAuthorPaged(actor, PostSearchKeywordTypeV1.content, "18명", 1, 10);
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PostController.class))

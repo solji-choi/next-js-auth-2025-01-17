@@ -3,9 +3,9 @@ package com.ll.standard.search;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public enum SearchKeywordTypeV1 {
-    title("title"),
-    content("content");
+public enum MemberSearchKeywordTypeV1 {
+    username("username"),
+    nickname("nickname");
 
     private final String value;
 }

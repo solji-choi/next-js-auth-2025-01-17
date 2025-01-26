@@ -2,6 +2,7 @@ package com.ll.domain.member.member.controller;
 
 import com.ll.domain.member.member.entity.Member;
 import com.ll.domain.member.member.service.MemberService;
+import com.ll.standard.search.MemberSearchKeywordTypeV1;
 import jakarta.servlet.http.Cookie;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -382,9 +383,6 @@ public class ApiV1MemberControllerTest {
     void t13() throws Exception {
         ResultActions resultActions = mvc
                 .perform(get("/api/v1/members?page=1&pageSize=10")
-                        .contentType(
-                                new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-                        )
                 )
                 .andDo(print());
 
@@ -419,9 +417,6 @@ public class ApiV1MemberControllerTest {
     void t14() throws Exception {
         ResultActions resultActions = mvc
                 .perform(get("/api/v1/members?page=1&pageSize=10")
-                        .contentType(
-                                new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-                        )
                 )
                 .andDo(print());
 
@@ -429,5 +424,39 @@ public class ApiV1MemberControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.resultCode").value("403-1"))
                 .andExpect(jsonPath("$.msg").value("권한이 없습니다."));
+    }
+
+    @Test
+    @DisplayName("다건 조회 with searchKeyword=user")
+    @WithUserDetails("admin")
+    void t15() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(get("/api/v1/members?page=1&pageSize=10&searchKeywordType=username&searchKeyword=user")
+                )
+                .andDo(print());
+
+        Page<Member> memberPage = memberService
+                .findByPaged(MemberSearchKeywordTypeV1.username, "user", 1, 10);
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("items"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItems").value(memberPage.getTotalElements()))
+                .andExpect(jsonPath("$.totalPages").value(memberPage.getTotalPages()))
+                .andExpect(jsonPath("$.currentPageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(10));
+
+        List<Member> members = memberPage.getContent();
+
+        for(int i = 0; i < members.size(); i++) {
+            Member member = members.get(i);
+
+            resultActions
+                    .andExpect(jsonPath("$.items[%d].id".formatted(i)).value(member.getId()))
+                    .andExpect(jsonPath("$.items[%d].createDate".formatted(i)).value(Matchers.startsWith(member.getCreateDate().toString().substring(0, 25))))
+                    .andExpect(jsonPath("$.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(member.getModifyDate().toString().substring(0, 25))))
+                    .andExpect(jsonPath("$.items[%d].nickname".formatted(i)).value(member.getName()));
+        }
     }
 }
