@@ -1,15 +1,12 @@
 package com.ll.domain.member.member.controller;
 
 import com.ll.domain.member.member.dto.MemberDto;
-import com.ll.domain.member.member.dto.MemberWithUsernameDto;
 import com.ll.domain.member.member.entity.Member;
 import com.ll.domain.member.member.service.MemberService;
 import com.ll.global.exceptions.ServiceException;
 import com.ll.global.rq.Rq;
 import com.ll.global.rsData.RsData;
 import com.ll.standard.base.Empty;
-import com.ll.standard.page.dto.PageDto;
-import com.ll.standard.search.MemberSearchKeywordTypeV1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -123,21 +120,6 @@ public class ApiV1MemberController {
         return new RsData(
                 "200-1",
                 "로그아웃 되었습니다"
-        );
-    }
-
-    @GetMapping
-    @Transactional(readOnly = true)
-    @Operation(summary = "회원 다건 조회")
-    public PageDto<MemberWithUsernameDto> items(
-            @RequestParam(defaultValue = "nickname") MemberSearchKeywordTypeV1 searchKeywordType,
-            @RequestParam(defaultValue = "") String searchKeyword,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize
-    ) {
-        return new PageDto<>(
-                memberService.findByPaged(searchKeywordType, searchKeyword, page, pageSize)
-                        .map(MemberWithUsernameDto::new)
         );
     }
 }
