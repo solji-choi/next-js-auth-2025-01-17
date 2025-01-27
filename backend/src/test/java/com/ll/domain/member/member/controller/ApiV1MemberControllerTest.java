@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -371,5 +372,33 @@ public class ApiV1MemberControllerTest {
                     assertThat(apiKeyCookie.isHttpOnly()).isTrue();
                     assertThat(apiKeyCookie.getSecure()).isTrue();
                 });
+    }
+
+    @Test
+    @DisplayName("me/edit")
+    @WithUserDetails("user1")
+    void t13() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        put("/api/v1/members/me")
+                                .content("""
+                                {
+                                    "nickname": "새 별명"
+                                }
+                                """.stripIndent())
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("회원정보가 수정되었습니다."))
+                .andExpect(jsonPath("$.data.id").value(3))
+                .andExpect(jsonPath("$.data.createDate").exists())
+                .andExpect(jsonPath("$.data.modifyDate").exists())
+                .andExpect(jsonPath("$.data.nickname").value("새 별명"));
     }
 }

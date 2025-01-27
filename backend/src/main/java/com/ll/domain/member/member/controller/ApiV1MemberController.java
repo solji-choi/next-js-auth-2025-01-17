@@ -122,4 +122,27 @@ public class ApiV1MemberController {
                 "로그아웃 되었습니다"
         );
     }
+
+
+    record MemberModifyMeReqBody(
+            @NotBlank
+            String nickname
+    ) {}
+
+    @PutMapping("/me")
+    @Transactional
+    @Operation(summary = "내 정보 수정", description = "내 정보를 수정합니다.")
+    public RsData<MemberDto> modifyMe(
+            @RequestBody @Valid MemberModifyMeReqBody reqBody
+    ) {
+        Member actor = memberService.findByUsername(rq.getActor().getUsername()).get();
+
+        memberService.modify(actor, reqBody.nickname);
+
+        return new RsData(
+                "200-1",
+                "회원정보가 수정되었습니다.",
+                new MemberDto(actor)
+        );
+    }
 }
