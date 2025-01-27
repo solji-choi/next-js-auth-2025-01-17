@@ -4,6 +4,8 @@ import com.ll.domain.member.member.entity.Member;
 import com.ll.domain.post.comment.entity.PostComment;
 import com.ll.global.exceptions.ServiceException;
 import com.ll.global.jpa.entity.BaseTime;
+import com.ll.global.rsData.RsData;
+import com.ll.standard.base.Empty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -60,31 +62,62 @@ public class Post extends BaseTime {
         comments.remove(postComment);
     }
 
+    public RsData<Empty> getCheckActorCanDeleteRs(Member actor) {
+        if (actor == null) return new RsData<>("401-1", "로그인 후 이용해주세요.");
+
+        if (actor.isAdmin()) return RsData.OK;
+
+        if (actor.equals(author)) return RsData.OK;
+
+        return new RsData<>("403-1", "작성자만 글을 삭제할 수 있습니다.");
+    }
+
     public void checkActorCanDelete(Member actor) {
-        if (actor == null) throw new ServiceException("401-1", "로그인 후 이용해주세요.");
+        Optional.of(
+                        getCheckActorCanDeleteRs(actor)
+                )
+                .filter(RsData::isFail)
+                .ifPresent(rsData -> {
+                    throw new ServiceException(rsData.getResultCode(), rsData.getMsg());
+                });
+    }
 
-        if (actor.isAdmin()) return;
+    public RsData<Empty> getCheckActorCanModifyRs(Member actor) {
+        if (actor == null) return new RsData<>("401-1", "로그인 후 이용해주세요.");
 
-        if (actor.equals(author)) return;
+        if (actor.equals(author)) return RsData.OK;
 
-        throw new ServiceException("403-1", "작성자만 글을 삭제할 수 있습니다.");
+        return new RsData<>("403-1", "작성자만 글을 수정할 수 있습니다.");
     }
 
     public void checkActorCanModify(Member actor) {
-        if (actor == null) throw new ServiceException("401-1", "로그인 후 이용해주세요.");
+        Optional.of(
+                        getCheckActorCanModifyRs(actor)
+                )
+                .filter(RsData::isFail)
+                .ifPresent(rsData -> {
+                    throw new ServiceException(rsData.getResultCode(), rsData.getMsg());
+                });
+    }
 
-        if (actor.equals(author)) return;
 
-        throw new ServiceException("403-1", "작성자만 글을 수정할 수 있습니다.");
+    public RsData<Empty> getCheckActorCanReadRs(Member actor) {
+        if (actor == null) return new RsData<>("401-1", "로그인 후 이용해주세요.");
+
+        if (actor.isAdmin()) return RsData.OK;
+
+        if (actor.equals(author)) return RsData.OK;
+
+        return new RsData<>("403-1", "비공개글은 작성자만 볼 수 있습니다.");
     }
 
     public void checkActorCanRead(Member actor) {
-        if (actor == null) throw new ServiceException("401-1", "로그인 후 이용해주세요.");
-
-        if (actor.isAdmin()) return;
-
-        if (actor.equals(author)) return;
-
-        throw new ServiceException("403-1", "비공개글은 작성자만 볼 수 있습니다.");
+        Optional.of(
+                        getCheckActorCanReadRs(actor)
+                )
+                .filter(RsData::isFail)
+                .ifPresent(rsData -> {
+                    throw new ServiceException(rsData.getResultCode(), rsData.getMsg());
+                });
     }
 }

@@ -31,6 +31,19 @@ public class ApiV1PostController {
     private final PostService postService;
     private final Rq rq;
 
+    private PostWithContentDto makePostWithContentDto(Post post) {
+        Member actor = rq.getActor();
+
+        PostWithContentDto postWithContentDto = new PostWithContentDto(post);
+
+        if (actor != null) {
+            postWithContentDto.setActorCanModify(post.getCheckActorCanModifyRs(actor).isSuccess());
+            postWithContentDto.setActorCanDelete(post.getCheckActorCanDeleteRs(actor).isSuccess());
+        }
+
+        return postWithContentDto;
+    }
+
     record PostStatisticsResBody(
             @NonNull
             long totalPostCount,
@@ -101,7 +114,7 @@ public class ApiV1PostController {
             post.checkActorCanRead(author);
         }
 
-        return new PostWithContentDto(postService.findById(id).get());
+        return makePostWithContentDto(post);
     }
 
     record PostWriteReqBody(
