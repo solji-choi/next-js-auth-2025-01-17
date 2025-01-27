@@ -400,5 +400,17 @@ public class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.data.createDate").exists())
                 .andExpect(jsonPath("$.data.modifyDate").exists())
                 .andExpect(jsonPath("$.data.nickname").value("새 별명"));
+
+        resultActions.andExpect(
+                result -> {
+                    Cookie accessTokenCookie = result.getResponse().getCookie("accessToken");
+                    assertThat(accessTokenCookie.getValue()).isNotBlank();
+                    assertThat(accessTokenCookie.getPath()).isEqualTo("/");
+                    assertThat(accessTokenCookie.isHttpOnly()).isTrue();
+                    assertThat(accessTokenCookie.getSecure()).isTrue();
+
+                    String authorization = result.getResponse().getHeader("Authorization");
+                    assertThat(authorization).isNotBlank();
+                });
     }
 }

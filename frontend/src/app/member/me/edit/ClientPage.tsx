@@ -30,7 +30,7 @@ export default function ClientPage({
       return
     }
 
-    router.replace('/member/me')
+    window.location.replace('/member/me')
   }
 
   return (

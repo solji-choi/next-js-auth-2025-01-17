@@ -103,4 +103,11 @@ public class Rq {
 
         resp.addHeader("Set-Cookie", cookie.toString());
     }
+
+    public void refreshAccessToken(Member member) {
+        String newAccessToken = memberService.getAccessToken(member);
+
+        setHeader("Authorization", "Bearer " + member.getApiKey() + " " + newAccessToken);
+        setCookie("accessToken", newAccessToken);
+    }
 }
