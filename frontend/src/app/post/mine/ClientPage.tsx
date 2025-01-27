@@ -21,7 +21,7 @@ export default function ClientPage({
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">공개글 목록</h1>
+      <h1 className="text-2xl font-bold">내 글</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault()

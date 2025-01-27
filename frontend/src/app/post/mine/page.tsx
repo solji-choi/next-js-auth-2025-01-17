@@ -6,7 +6,7 @@ export default async function Page({
   searchParams,
 }: {
   searchParams: {
-    searchKeywordType?: 'username' | 'nickname'
+    searchKeywordType?: 'title' | 'content'
     searchKeyword?: string
     pageSize?: number
     page?: number
@@ -14,12 +14,12 @@ export default async function Page({
 }) {
   const {
     searchKeyword = '',
-    searchKeywordType = 'nickname',
+    searchKeywordType = 'title',
     pageSize = 10,
     page = 1,
   } = await searchParams
 
-  const response = await client.GET('/api/v1/adm/members', {
+  const response = await client.GET('/api/v1/posts/mine', {
     params: {
       query: {
         searchKeyword,
@@ -33,7 +33,7 @@ export default async function Page({
     },
   })
 
-  const itemPage = response.data!!
+  const responseBody = response.data!!
 
   return (
     <>
@@ -42,7 +42,7 @@ export default async function Page({
         searchKeywordType={searchKeywordType}
         page={page}
         pageSize={pageSize}
-        itemPage={itemPage}
+        responseBody={responseBody}
       />
     </>
   )
